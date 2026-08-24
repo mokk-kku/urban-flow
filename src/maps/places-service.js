@@ -27,6 +27,20 @@ export function initPlacesAutocomplete() {
         state.selectedDestination = normalizeAutocompletePlace(state.destinationAutocomplete.getPlace(), $('destinationInput').value);
         resetRouteVisualization(true);
     });
+
+    const incidentInput = $('incidentLocationInput');
+    if (incidentInput) {
+        state.incidentAutocomplete = new google.maps.places.Autocomplete(incidentInput, options);
+        state.incidentAutocomplete.addListener('place_changed', () => {
+            state.selectedIncidentLocation = normalizeAutocompletePlace(
+                state.incidentAutocomplete.getPlace(),
+                incidentInput.value,
+            );
+        });
+        incidentInput.addEventListener('input', () => {
+            state.selectedIncidentLocation = null;
+        });
+    }
 }
 
 export function normalizeAutocompletePlace(place, fallbackName) {

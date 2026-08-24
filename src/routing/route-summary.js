@@ -8,7 +8,7 @@ export function summarizeRoute(route) {
         walkMeters: 0,
         transitStepCount: 0,
         transfers: 0,
-        fareValue: route.fare?.value ?? null,
+        fareValue: route.fare?.value ?? null, //ยึดราคาตามที่ Google ให้มา ถ้าไม่มีค่อยประเมินราคาเองข้างล่าง
         fareSource: route.fare ? 'google' : 'estimated',
         steps: [],
     };
@@ -57,24 +57,96 @@ function toDisplayStep(step, mode, distanceMeters, durationSeconds) {
         durationSeconds,
     };
 }
-
+ // คิดราคาโดยประมาณ (เดี๋ยวทำ Database เก็บราคาจริง)
 export function estimateFare(route) {
     let total = 0;
+
     route.legs.forEach((leg) => {
         leg.steps.forEach((step) => {
-            if (String(step.travel_mode).toUpperCase() !== 'TRANSIT' || !step.transit) return;
+            if (String(step.travel_mode || '').toUpperCase() !== 'TRANSIT' || !step.transit) return;
+
             const line = step.transit.line;
             const vehicleType = String(line?.vehicle?.type || '').toUpperCase();
-            const agency = (line?.agencies || []).map((a) => a.name).join(' ').toUpperCase();
-            const name = `${line?.name || ''} ${line?.short_name || ''}`.toUpperCase();
+            const agency = (line?.agencies || [])
+                .map((item) => item.name || '')
+                .join(' ')
+                .toUpperCase();
+            const lineName = `${line?.name || ''} ${line?.short_name || ''}`.toUpperCase();
 
-            if (vehicleType.includes('BUS') || agency.includes('BMTA')) total += 15;
-            else if (agency.includes('BTS') || name.includes('BTS') || name.includes('SUKHUMVIT') || name.includes('SILOM')) total += 47;
-            else if (agency.includes('MRT') || name.includes('MRT')) total += 43;
-            else if (name.includes('AIRPORT') || name.includes('ARL') || agency.includes('SRTET')) total += 45;
-            else if (vehicleType.includes('SUBWAY') || vehicleType.includes('RAIL') || vehicleType.includes('TRAIN')) total += 40;
-            else total += 25;
+            // รถเมล์กับเรือคิดราคาเหมาจ่าย
+            if (isBusTransit(vehicleType, agency, lineName)) {
+                total += 20;
+                return;
+            }
+
+            if (isBoatTransit(vehicleType, agency, lineName)) {
+                total += 20;
+                return;
+            }
+
+            // สถานีแรก 17 บาท + สถานีละ 3 บาท แต่ไม่เกิน 44 บาท
+            if (isRailTransit(vehicleType, agency, lineName)) {
+                total += estimateRailFare(step.transit.num_stops);
+                return;
+            }
+
+            // Fallback สำหรับ Transit ที่ Google ไม่ระบุประเภทชัดเจน
+            // ถ้ามีจำนวนสถานี ให้ใช้กฎรถไฟฟ้า หรือใช้ราคาเหมาจ่าย 20 บาท
+            const numStops = Number(step.transit.num_stops);
+            total += Number.isFinite(numStops) && numStops > 0
+                ? estimateRailFare(numStops)
+                : 20;
         });
     });
+
     return total;
+}
+
+function estimateRailFare(numStops) {
+    const stops = Math.max(1, Math.floor(Number(numStops) || 1));
+    const fare = 17 + Math.max(0, stops - 1) * 3;
+    return Math.min(44, fare);
+}
+
+function isBusTransit(vehicleType, agency, lineName) {
+    return vehicleType.includes('BUS')
+        || vehicleType.includes('TROLLEYBUS')
+        || agency.includes('BMTA')
+        || lineName.includes('BUS');
+}
+
+function isBoatTransit(vehicleType, agency, lineName) {
+    return vehicleType.includes('FERRY')
+        || vehicleType.includes('BOAT')
+        || agency.includes('BOAT')
+        || agency.includes('FERRY')
+        || lineName.includes('BOAT')
+        || lineName.includes('FERRY');
+}
+
+function isRailTransit(vehicleType, agency, lineName) {
+    const railVehicleTypes = [
+        'RAIL',
+        'METRO_RAIL',
+        'SUBWAY',
+        'TRAM',
+        'MONORAIL',
+        'HEAVY_RAIL',
+        'COMMUTER_TRAIN',
+        'HIGH_SPEED_TRAIN',
+        'LONG_DISTANCE_TRAIN',
+        'TRAIN',
+    ];
+
+    return railVehicleTypes.some((type) => vehicleType.includes(type))
+        || agency.includes('BTS')
+        || agency.includes('MRT')
+        || agency.includes('SRT')
+        || agency.includes('SRTET')
+        || lineName.includes('BTS')
+        || lineName.includes('MRT')
+        || lineName.includes('SUKHUMVIT')
+        || lineName.includes('SILOM')
+        || lineName.includes('AIRPORT RAIL LINK')
+        || lineName.includes('ARL');
 }

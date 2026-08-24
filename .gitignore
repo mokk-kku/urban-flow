@@ -1,0 +1,14 @@
+# Node
+node_modules/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Supabase local/temp files
+supabase/.temp/
+
+# OS
+.DS_Store
+Thumbs.db

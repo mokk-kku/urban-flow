@@ -7,6 +7,8 @@ import { resetRouteVisualization } from '../maps/map-service.js';
 import { renderRouteCandidates } from '../routing/route-renderer.js';
 import { setupLanguage } from './language.js';
 import { renderFavorites } from '../storage/favorites.js';
+import { savePreferredLanguage } from '../services/profile-service.js';
+import { renderCategoryOptions, refreshCommunityHistory } from './community.js';
 
 export function setupGeneralEvents() {
     $('searchBtn').addEventListener('click', () => calculateTransitRoutes(false));
@@ -57,7 +59,10 @@ export function setupGeneralEvents() {
         state.currentLang = state.currentLang === 'th' ? 'en' : 'th';
         localStorage.setItem('urban_lang', state.currentLang);
         setupLanguage();
+        renderCategoryOptions();
         renderFavorites();
+        refreshCommunityHistory();
+        savePreferredLanguage(state.currentLang);
         if (state.lastDirectionsResult) renderRouteCandidates(state.lastDirectionsResult);
     });
 }
