@@ -13,7 +13,7 @@
         <header class="app-header">
             <div>
                 <h1>Urban Flow</h1>
-                <p data-en="Bangkok public-transit route planner" data-th="ระบบค้นหาเส้นทางขนส่งสาธารณะในกรุงเทพฯ">ระบบค้นหาเส้นทางขนส่งสาธารณะในกรุงเทพฯ</p>
+                <p data-en="Bangkok Public-Transit Route Planner" data-th="ระบบค้นหาเส้นทางขนส่งสาธารณะในกรุงเทพฯ">ระบบค้นหาเส้นทางขนส่งสาธารณะในกรุงเทพฯ</p>
             </div>
             <div>
                 <button class="ghost-btn" id="useCurrentLocationBtn" title="Use current location"> <!-- Only use this button if you are in Bangkok -->
@@ -64,15 +64,19 @@
                     <div class="mode-cards">
                         <button class="mode-card active" data-mode="distance">
                             <div class="mode-icon"><i class="fa-solid fa-ruler-combined"></i></div>
-                            <span data-en="Shortest" data-th="สั้นที่สุด">สั้นที่สุด</span>
+                            <span data-en="Shortest" data-th="ระยะทางสั้นที่สุด">ระยะทางสั้นที่สุด</span>
                         </button>
                         <button class="mode-card" data-mode="cost">
                             <div class="mode-icon"><i class="fa-solid fa-coins"></i></div>
-                            <span data-en="Cheapest" data-th="ถูกที่สุด">ถูกที่สุด</span>
+                            <span data-en="Cheapest (THB)" data-th="ราคาถูกที่สุด (บาท)">ราคาถูกที่สุด (บาท)</span>
                         </button>
                         <button class="mode-card" data-mode="walk">
                             <div class="mode-icon"><i class="fa-solid fa-person-walking"></i></div>
-                            <span data-en="Least walk" data-th="เดินน้อยที่สุด">เดินน้อยที่สุด</span>
+                            <span data-en="Least walk" data-th="เดินเท้าน้อยที่สุด">เดินเท้าน้อยที่สุด</span>
+                        </button>
+                        <button class="mode-card" data-mode="time">
+                            <div class="mode-icon"><i class="fa-regular fa-clock"></i></div>
+                            <span data-en="Least time" data-th="เวลาน้อยที่สุด">เวลาน้อยที่สุด</span>
                         </button>
                     </div>
 
@@ -122,6 +126,156 @@
                     <div class="map-panel-note" data-en="Actual point-to-point route suggestions are still calculated by Google Transit after search." data-th="เส้นทางแนะนำจากจุดเริ่มต้นไปปลายทางจริงยังคำนวณด้วย Google Transit หลังค้นหา">เส้นทางแนะนำจากจุดเริ่มต้นไปปลายทางจริงยังคำนวณด้วย Google Transit หลังค้นหา</div>
                 </div>
                 <div id="map"></div>
+            </section>
+
+            <section id="page-community" class="page-section">
+                <div class="page-pad community-page">
+                    <div class="section-title-row community-heading">
+                        <div>
+                            <h2 data-en="Community Reports" data-th="รายงานจากชุมชน">รายงานจากชุมชน</h2>
+                            <p data-en="Report current incidents or propose updated public-transit fares." data-th="แจ้งเหตุการณ์ปัจจุบันหรือเสนอข้อมูลค่าโดยสารขนส่งสาธารณะที่เปลี่ยนแปลง">แจ้งเหตุการณ์ปัจจุบันหรือเสนอข้อมูลค่าโดยสารขนส่งสาธารณะที่เปลี่ยนแปลง</p>
+                        </div>
+                    </div>
+
+                    <div class="community-tabs">
+                        <button type="button" class="community-tab active" data-community-tab="incident">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span data-en="Incident" data-th="แจ้งเหตุการณ์">แจ้งเหตุการณ์</span>
+                        </button>
+                        <button type="button" class="community-tab" data-community-tab="fare">
+                            <i class="fa-solid fa-ticket"></i>
+                            <span data-en="Fare change" data-th="แจ้งค่าโดยสาร">แจ้งค่าโดยสาร</span>
+                        </button>
+                    </div>
+
+                    <div class="community-panel active" data-community-panel="incident">
+                        <form id="incidentReportForm" class="community-form">
+                            <div class="form-row two-columns">
+                                <div class="input-group">
+                                    <label for="incidentCategory" data-en="Category" data-th="ประเภทเหตุการณ์">ประเภทเหตุการณ์</label>
+                                    <select id="incidentCategory" class="profile-input" required></select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="incidentSeverity" data-en="Severity" data-th="ระดับความรุนแรง">ระดับความรุนแรง</label>
+                                    <select id="incidentSeverity" class="profile-input" required>
+                                        <option value="low" data-en="Low" data-th="ต่ำ">ต่ำ</option>
+                                        <option value="medium" selected data-en="Medium" data-th="ปานกลาง">ปานกลาง</option>
+                                        <option value="high" data-en="High" data-th="สูง">สูง</option>
+                                        <option value="critical" data-en="Critical" data-th="วิกฤต">วิกฤต</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="incidentTitle" data-en="Title" data-th="หัวข้อรายงาน">หัวข้อรายงาน</label>
+                                <input id="incidentTitle" class="profile-input" type="text" maxlength="200" minlength="3" required placeholder="เช่น รถเสียกีดขวางช่องทางซ้าย">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="incidentLocationInput" data-en="Incident location" data-th="สถานที่เกิดเหตุ">สถานที่เกิดเหตุ</label>
+                                <div class="inline-input-action">
+                                    <input id="incidentLocationInput" class="profile-input" type="text" autocomplete="off" required placeholder="ค้นหาสถานที่ในกรุงเทพฯ">
+                                    <button id="useRouteOriginForIncident" class="compact-btn" type="button" title="Use current route origin"><i class="fa-solid fa-location-crosshairs"></i></button>
+                                </div>
+                                <small class="form-help" data-en="Choose a Google Maps suggestion so the report contains valid coordinates." data-th="กรุณาเลือกสถานที่จากรายการแนะนำของ Google Maps เพื่อให้ระบบบันทึกพิกัดได้ถูกต้อง">กรุณาเลือกสถานที่จากรายการแนะนำของ Google Maps เพื่อให้ระบบบันทึกพิกัดได้ถูกต้อง</small>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="incidentDescription" data-en="Description" data-th="รายละเอียดเพิ่มเติม">รายละเอียดเพิ่มเติม</label>
+                                <textarea id="incidentDescription" class="profile-input" rows="4" placeholder="อธิบายสิ่งที่เกิดขึ้น"></textarea>
+                            </div>
+
+                            <div id="incidentFormStatus" class="form-status hidden" role="status"></div>
+                            <div class="incident-form-actions">
+                                <button id="submitIncidentBtn" class="primary-btn" type="submit">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                    <span id="incidentSubmitText" 
+                                        data-en="Submit report"
+                                        data-th="ส่งรายงาน">ส่งรายงานเหตุการณ์
+                                    </span>
+                                </button>
+                                <button id="cancelIncidentEditBtn" class="secondary-btn hidden" type="button">
+                                    <i class="fa-solid fa-xmark"></i>
+                                    <span data-en="Cancel editing"
+                                          data-th="ยกเลิกการแก้ไข">ยกเลิกการแก้ไข
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <h3 class="small-heading history-heading" data-en="My incident reports" data-th="รายงานเหตุการณ์ของฉัน">รายงานเหตุการณ์ของฉัน</h3>
+                        <div id="myIncidentReports" class="submission-list"></div>
+                    </div>
+
+                    <div class="community-panel" data-community-panel="fare">
+                        <form id="fareChangeForm" class="community-form">
+                            <div class="input-group">
+                                <label for="fareOperatorName" data-en="Operator" data-th="ผู้ให้บริการ">ผู้ให้บริการ</label>
+                                <input id="fareOperatorName" class="profile-input" type="text" maxlength="200" required placeholder="เช่น BMTA / BTS / MRT">
+                            </div>
+
+                            <div class="form-row two-columns">
+                                <div class="input-group">
+                                    <label for="fareTransportMode" data-en="Transport mode" data-th="ประเภทขนส่ง">ประเภทขนส่ง</label>
+                                    <select id="fareTransportMode" class="profile-input" required>
+                                        <option value="bus">Bus</option>
+                                        <option value="bts">BTS</option>
+                                        <option value="mrt">MRT</option>
+                                        <option value="arl">ARL</option>
+                                        <option value="train">Train</option>
+                                        <option value="boat">Boat</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="fareTransportLine" data-en="Line / route" data-th="สาย / เส้นทาง">สาย / เส้นทาง</label>
+                                    <input id="fareTransportLine" class="profile-input" type="text" maxlength="200" placeholder="เช่น สายสุขุมวิท / รถเมล์สาย 8">
+                                </div>
+                            </div>
+
+                            <div class="form-row two-columns">
+                                <div class="input-group">
+                                    <label for="fareOld" data-en="Old fare (THB)" data-th="ค่าโดยสารเดิม (บาท)">ค่าโดยสารเดิม (บาท)</label>
+                                    <input id="fareOld" class="profile-input" type="number" min="0" step="0.01" inputmode="decimal">
+                                </div>
+                                <div class="input-group">
+                                    <label for="fareProposed" data-en="New fare (THB)" data-th="ค่าโดยสารใหม่ (บาท)">ค่าโดยสารใหม่ (บาท)</label>
+                                    <input id="fareProposed" class="profile-input" type="number" min="0" step="0.01" inputmode="decimal" required>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="fareEffectiveDate" data-en="Effective date" data-th="วันที่เริ่มมีผล">วันที่เริ่มมีผล</label>
+                                <input id="fareEffectiveDate" class="profile-input" type="date">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="fareSourceUrl" data-en="Source URL" data-th="ลิงก์แหล่งข้อมูล">ลิงก์แหล่งข้อมูล</label>
+                                <input id="fareSourceUrl" class="profile-input" type="url" placeholder="https://...">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="fareEvidence" data-en="Evidence file (optional)" data-th="ไฟล์หลักฐาน (ไม่บังคับ)">ไฟล์หลักฐาน (ไม่บังคับ)</label>
+                                <input id="fareEvidence" class="profile-input file-input" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
+                                <small class="form-help" data-en="JPG, PNG, WebP or PDF. Files are stored privately in Supabase Storage." data-th="รองรับ JPG, PNG, WebP หรือ PDF และจัดเก็บแบบส่วนตัวใน Supabase Storage">รองรับ JPG, PNG, WebP หรือ PDF และจัดเก็บแบบส่วนตัวใน Supabase Storage</small>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="fareDescription" data-en="Description" data-th="รายละเอียดเพิ่มเติม">รายละเอียดเพิ่มเติม</label>
+                                <textarea id="fareDescription" class="profile-input" rows="4" placeholder="อธิบายรายละเอียดการเปลี่ยนแปลงค่าโดยสาร"></textarea>
+                            </div>
+
+                            <div id="fareFormStatus" class="form-status hidden" role="status"></div>
+                            <button id="submitFareBtn" class="primary-btn" type="submit">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span data-en="Submit fare change request" data-th="ส่งคำร้องเปลี่ยนแปลงค่าโดยสาร">ส่งคำร้องเปลี่ยนแปลงค่าโดยสาร</span>
+                            </button>
+                        </form>
+
+                        <h3 class="small-heading history-heading" data-en="My fare requests" data-th="คำร้องค่าโดยสารของฉัน">คำร้องค่าโดยสารของฉัน</h3>
+                        <div id="myFareRequests" class="submission-list"></div>
+                    </div>
+                </div>
             </section>
 
             <section id="page-favorites" class="page-section">
@@ -199,6 +353,10 @@
             <button class="nav-item" data-target="page-map">
                 <i class="fa-solid fa-map-location-dot"></i>
                 <span data-en="Map" data-th="แผนที่">แผนที่</span>
+            </button>
+            <button class="nav-item" data-target="page-community">
+                <i class="fa-solid fa-bullhorn"></i>
+                <span data-en="Report" data-th="รายงาน">รายงาน</span>
             </button>
             <button class="nav-item" data-target="page-favorites">
                 <i class="fa-solid fa-heart"></i>

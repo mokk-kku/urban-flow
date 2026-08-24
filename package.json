@@ -1,0 +1,11 @@
+{
+  "name": "urban-flow",
+  "private": true,
+  "scripts": {
+    "db:dry-run": "supabase db push --dry-run",
+    "db:push": "supabase db push"
+  },
+  "devDependencies": {
+    "supabase": "^2.109.1"
+  }
+}

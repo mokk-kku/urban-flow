@@ -8,19 +8,32 @@ import { renderFavorites } from './storage/favorites.js';
 import { initMaps } from './maps/map-service.js';
 import { initPlacesAutocomplete } from './maps/places-service.js';
 import { showApiStatus, hideApiStatus } from './ui/messages.js';
+import { isSupabaseConfigured, supabase } from './supabase-client.js';
+import { loadCurrentProfile } from './services/profile-service.js';
+import { setupCommunity } from './ui/community.js';
 
-if (sessionStorage.getItem('isLoggedIn') !== 'true') {
-    window.location.href = 'auth.html';
-}
+bootstrap();
 
-init();
+async function bootstrap() {
+    if (!isSupabaseConfigured || !supabase) {
+        window.location.replace('auth.html');
+        return;
+    }
 
-async function init() {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+        window.location.replace('auth.html');
+        return;
+    }
+
+    await loadCurrentProfile(data.user);
+
     setupLanguage();
     setupNavigation();
     setupProfile();
     setupGeneralEvents();
-    renderFavorites();
+    setupCommunity();
+    await renderFavorites();
 
     try {
         await loadGoogleMaps(state.currentLang);
@@ -28,8 +41,8 @@ async function init() {
         initMaps();
         initPlacesAutocomplete();
         hideApiStatus();
-    } catch (error) {
+    } catch (googleError) {
         showApiStatus(`${t('apiKeyTitle')}<br><small>${t('apiKeyBody')}</small>`);
-        console.error(error);
+        console.error(googleError);
     }
 }

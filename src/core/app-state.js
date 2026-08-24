@@ -38,6 +38,12 @@ export const STRINGS = {
         openMap: 'ดูบนแผนที่',
         saved: 'บันทึกแล้ว',
         favoriteEmpty: 'ยังไม่มีเส้นทางที่บันทึกไว้',
+        favoriteLoadError: 'ไม่สามารถโหลดเส้นทางที่บันทึกไว้ได้',
+        favoriteDelete: 'ลบ',
+        favoriteUse: 'ใช้เส้นทางนี้',
+        loginRequired: 'กรุณาเข้าสู่ระบบก่อนใช้งาน',
+        reportSaved: 'ส่งรายงานเหตุการณ์เรียบร้อยแล้ว',
+        fareRequestSaved: 'ส่งคำร้องเปลี่ยนแปลงค่าโดยสารเรียบร้อยแล้ว',
         currentLocation: 'ตำแหน่งปัจจุบันของฉัน',
         routeWarning: 'หมายเหตุ: ค่าโดยสารถูกใช้จาก Google เมื่อมีข้อมูล หากไม่มี ระบบจะประมาณจากชนิดระบบขนส่งในแต่ละช่วง',
         transitUnavailable: 'Google ไม่ส่งเส้นทางขนส่งสาธารณะในช่วงเวลานี้ ลองเปลี่ยนจุดหมายหรือเวลาค้นหา',
@@ -71,6 +77,12 @@ export const STRINGS = {
         openMap: 'Open map',
         saved: 'Saved',
         favoriteEmpty: 'No saved routes yet.',
+        favoriteLoadError: 'Could not load saved routes.',
+        favoriteDelete: 'Delete',
+        favoriteUse: 'Use this route',
+        loginRequired: 'Please sign in first.',
+        reportSaved: 'Incident report submitted.',
+        fareRequestSaved: 'Fare change request submitted.',
         currentLocation: 'My current location',
         routeWarning: 'Note: fares use Google data when available. Otherwise, the app estimates fare from transit vehicle types.',
         transitUnavailable: 'Google did not return a transit route right now. Try another destination or search time.',
@@ -111,11 +123,16 @@ export const state = {
     overviewBounds: null,
     overviewInfoWindow: null,
     isOverviewMode: false,
-    userEmail: sessionStorage.getItem('userEmail') || 'guest@urbanflow.local',
+    currentUser: null,
+    userEmail: '',
     userName: '',
+    userProfile: null,
+    selectedIncidentLocation: null,
+    incidentAutocomplete: null,
+    reportCategories: [],
+    editingIncidentId: null,
+    myIncidentReports: [],
 };
-
-state.userName = localStorage.getItem(`urban_name_${state.userEmail}`) || state.userEmail.split('@')[0];
 
 export function t(key) {
     return STRINGS[state.currentLang]?.[key] || key;

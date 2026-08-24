@@ -23,3 +23,29 @@ body.th-lang { font-family: 'Prompt', sans-serif; }
 #toggle-auth { color: #00e676; text-decoration: none; font-size: 13px; }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
 .error-shake { animation: shake 0.3s; border-color: #ff5252 !important; }
+.auth-card h1 { margin: 0 0 8px; }
+.auth-card > p { margin: 0 0 24px; color: #c7d0d4; font-size: 13px; }
+.auth-status {
+    margin: 0 0 18px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 12px;
+    line-height: 1.5;
+    background: rgba(255, 82, 82, .13);
+    border: 1px solid rgba(255, 82, 82, .45);
+    color: #ffd1d1;
+}
+.auth-status.success {
+    background: rgba(0, 230, 118, .12);
+    border-color: rgba(0, 230, 118, .4);
+    color: #b9ffd8;
+}
+.auth-btn:disabled { opacity: .65; cursor: wait; }
+.auth-footer p { margin-bottom: 0; }
+
+.auth-card { width: min(390px, calc(100vw - 32px)); box-sizing: border-box; }
+@media (max-width: 430px) {
+    .auth-card { padding: 28px 22px; }
+    .lang-btn { top: 12px; right: 12px; }
+}
